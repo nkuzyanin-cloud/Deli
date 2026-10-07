@@ -92,6 +92,20 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
 #view-route .delivery-title{color:var(--text);font-weight:650}#view-route .focus-hero .delivery-title{color:#fafaf2;font-weight:700;margin:0}#view-route .delivery-meta{font-weight:400}#view-route .focus-hero .delivery-meta{font-weight:550}#view-route .queue-card.done .delivery-title{color:#79857c}#view-route .focus-hero .delivery-icon{grid-row:1;align-self:start;position:absolute;right:0;top:0}#view-route .focus-hero .delivery-row{position:relative}#view-route .focus-hero .next-label{min-height:24px;margin-bottom:14px}#view-route .focus-hero .delivery-icon>svg{width:45px;height:45px}#view-route .focus-fare .fare-chip{min-height:44px}#view-route .queue-card{min-height:68px}#view-route .queue-card.home-card .delivery-title{font-weight:600}
 #view-route .delivery-row{width:100%}
 #view-route .focus-fare .fare-chip:not(.recorded) span{width:27px;height:27px;min-width:27px;border-radius:50%;font-size:.82rem;background:#f1f3ea;border:1px solid #dfe3d8}#view-route .focus-fare:has(.fare-chip:not(.recorded)){margin-top:-5px;margin-bottom:0}#view-route .focus-hero .delivery-title{padding-right:47px}#view-route .focus-hero .delivery-icon>svg{width:46px;height:46px}
+/* v22: fare action in current card, quiet separators */
+#view-route .focus-hero .hero-fare{position:absolute;top:0;right:0;display:flex;align-items:center;justify-content:flex-end;min-height:44px;height:auto;width:auto!important;max-width:100px;flex-basis:auto!important;margin:0;padding:0;border:0}
+#view-route .hero-fare .fare-chip{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;width:auto;border:1px solid #dce6d8;border-radius:50%;padding:0 10px;color:#f7f8ef;background:transparent}
+#view-route .hero-fare .fare-chip span{display:block;min-width:0;width:auto;height:auto;border:0;border-radius:0;background:none;color:inherit;padding:0;font-size:1.13rem;line-height:1.2;font-weight:500}
+#view-route .hero-fare .fare-chip.recorded{border-radius:22px;padding:0 10px}#view-route .hero-fare .fare-chip.recorded span{font-size:.87rem;white-space:nowrap}
+#view-route .focus-hero .next-label{max-width:calc(100% - 110px);min-height:32px;display:flex;align-items:center;margin-bottom:12px}#view-route .focus-hero .delivery-title{padding-right:0}
+#view-route .route-separator{height:1px;background:#cfd7cc;margin:17px 4px 19px;min-height:1px}
+#view-route .focus-fare{gap:8px;align-items:center;margin:3px 0 9px;padding:0;min-height:44px}#view-route .focus-fare:has(.fare-chip:not(.recorded)){margin:3px 0 9px}
+#view-route .focus-fare:after{content:'';height:1px;background:#cfd7cc;flex:1;min-width:0;margin-right:4px}
+#view-route .focus-fare .fare-chip{flex:0 0 auto;margin:0;padding:0;min-width:44px;min-height:44px}
+#view-route .focus-fare .fare-chip.recorded{margin:0;padding:0 10px}#view-route .focus-fare .fare-chip.recorded:before,#view-route .focus-fare .fare-chip.recorded:after{display:none}
+#view-route .focus-fare .fare-chip:not(.recorded) span{width:27px;height:27px;border-radius:50%;background:#f1f3ea;border:1px solid #dfe3d8}
+#view-route #deliveryList.reordering .hero-fare,#view-route #deliveryList.reordering .route-separator{display:none!important}
+@media(max-width:350px){#view-route .focus-hero .next-label{max-width:calc(100% - 90px);font-size:.57rem}#view-route .hero-fare .fare-chip.recorded span{font-size:.76rem}}
 </style></head><body><main class="app">
 <section id="view-route" class="view active">
 <header class="focus-route-head"><h1>Маршрут</h1><button id="routeActions" class="icon-btn route-menu" hidden>Готово</button></header>
@@ -251,7 +265,6 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
     const completed=stages.filter(d=>d.done&&d.kind!=='finish'),completedRecords=completed.filter(d=>!d.kind).length;
     const finishOrder=20+day.deliveries.length*3,completedBase=finishOrder+100;
     if(day.finishedAt&&!reordering){const status=document.createElement('section');status.className='route-result';status.style.order='-5';status.innerHTML='<span class="result-check">'+checkSvg()+'</span><div><strong>Маршрут завершён</strong><span>'+escapeHtml(durationText(dayTimes(day).work))+' · '+done+' из '+total+' доставок · '+escapeHtml(money(fareTotal(day)))+'</span></div>';list.append(status)}
-    if(queue.length&&!reordering){const heading=document.createElement('div');heading.className='queue-heading';heading.style.order='8';heading.innerHTML='<h2>Дальше</h2><span>'+queue.length+' '+plural(queue.length,'остановка','остановки','остановок')+(queuedDeliveryCount!==queue.length?' · '+queuedDeliveryCount+' '+plural(queuedDeliveryCount,'доставка','доставки','доставок'):'')+'</span>';list.append(heading)}
     const cardOrders=new Map();
     stages.forEach((d,i)=>{
       const hero=!reordering&&d.id===focus?.id,isCompleted=d.done&&d.kind!=='finish';
@@ -263,12 +276,25 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
       list.append(card);
     });
     if(!reordering){
+      // The fare action belongs to the leg after the focused stop.
+      // At the final home stage it edits the incoming return leg. IDs stay stable.
+      const focusIndex=focus?stages.findIndex(d=>d.id===focus.id):-1;
+      const heroLegIndex=focusIndex>=0?Math.min(focusIndex+1,stages.length-1):-1;
+      if(heroLegIndex>0&&heroLegIndex<stages.length){
+        const leg=makeFareLeg(day,stages[heroLegIndex-1],stages[heroLegIndex]);
+        const holder=list.querySelector('.focus-hero .delivery-icon');
+        holder.classList.add('hero-fare','fare-leg');holder.removeAttribute('aria-hidden');
+        holder.dataset.from=leg.dataset.from;holder.dataset.to=leg.dataset.to;
+        holder.replaceChildren(leg.querySelector('button'));
+        const separator=document.createElement('div');separator.className='route-separator';separator.style.order='4';separator.setAttribute('aria-hidden','true');list.append(separator);
+      }
       for(let i=1;i<stages.length;i++){
+        if(i===heroLegIndex&&focus)continue;
         const from=stages[i-1],to=stages[i];
         const leg=makeFareLeg(day,from,to),toCompleted=to.done&&to.kind!=='finish';
         leg.classList.add('focus-fare');
         if(toCompleted){leg.classList.add('focus-completed');leg.style.order=String(cardOrders.get(to.id)-1)}
-        else if(to.id===focus?.id){leg.style.order='4'}
+        else if(to.id===focus?.id){leg.classList.add('focus-completed');leg.style.order=String(completedBase-1)}
         else leg.style.order=String(cardOrders.get(to.id)-1);
         // A final empty leg on a finished day would invite recording another ride.
         if(day.finishedAt&&!leg.querySelector('.recorded'))leg.hidden=true;
@@ -298,7 +324,7 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
       if(!d.kind)enableHold(card);
       main.tabIndex=0;main.setAttribute('role','button');main.setAttribute('aria-haspopup','dialog');main.setAttribute('aria-label',(d.kind?'Настройки: ':'Изменить запись: ')+d.title);
       const edit=()=>{if(performance.now()-lastDayChange<350||performance.now()<suppressClickUntil)return;if(d.kind){if(d.done)openTimeForm(d);else openHomeForm()}else openForm(d)};
-      if(!numberCheck)card.querySelector('.delivery-icon').addEventListener('click',edit);
+      if(!numberCheck&&!hero)card.querySelector('.delivery-icon').addEventListener('click',edit);
       main.addEventListener('click',e=>{if(!e.target.closest('a,button'))edit()});main.addEventListener('keydown',e=>{if(e.target===main&&(e.key==='Enter'||e.key===' ')){e.preventDefault();edit()}});
     }else if(!d.kind){
       card.querySelector('.delivery-controls').remove();card.querySelector('.delivery-icon').innerHTML=icon;
@@ -357,7 +383,7 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
       const origin=modalOrigins.get(id);
       if(restoreFocus){
         const cardId=origin?.closest?.('.delivery-card')?.dataset.id;
-        const replacement=cardId?[...document.querySelectorAll('.delivery-card')].find(c=>c.dataset.id===cardId)?.querySelector(origin.classList.contains('map-btn')?'.map-btn':'.delivery-main'):null;
+        const replacement=cardId?[...document.querySelectorAll('.delivery-card')].find(c=>c.dataset.id===cardId)?.querySelector(origin.classList.contains('fare-chip')?'.fare-chip':origin.classList.contains('map-btn')?'.map-btn':'.delivery-main'):null;
         const target=origin?.isConnected?origin:replacement||$('toggleForm');
         (target?.getClientRects().length?target:document.querySelector('#deliveryList .completed-toggle')||$('toggleForm'))?.focus({preventScroll:true});
       }
