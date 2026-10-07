@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="format-detection" content="telephone=no">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#faf9f5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Маршруты">
@@ -82,11 +82,23 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
 
 /* v20: reusable address book, snapshots in delivery records */
 .place-add{width:100%;margin-bottom:16px;min-height:48px}.places-list{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden}.place-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;border-bottom:1px solid var(--border);background:white;text-align:left;min-height:72px;padding:14px;color:var(--text)}.place-row:last-child{border-bottom:0}.place-row-content{display:flex;flex-direction:column;gap:4px;min-width:0;overflow-wrap:anywhere}.place-row strong{font-size:.93rem;font-weight:600}.place-row-content>span{font-size:.78rem;color:var(--muted)}.place-row small{font-size:.68rem;color:var(--blue)}.place-row>svg{width:18px;height:18px;flex:none;color:var(--muted)}.place-choose svg,.place-row>svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.place-editor{padding:16px;border:1px solid var(--border);border-radius:14px;background:white}.place-editor textarea{resize:vertical;min-height:84px}.place-editor .form-actions{position:static;background:white;margin-top:18px}.place-editor .editor-delete{margin-top:18px}.place-choose{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:10px 12px;margin:0 0 16px;background:var(--blue-soft);color:var(--blue);border:0;border-radius:10px;font-size:.78rem;text-align:left}.place-choose svg{width:19px;height:19px;flex:none}.place-choose span{flex:1}.place-choose[aria-expanded=true]>svg:last-child{transform:rotate(180deg)}.place-picker{margin:-8px 0 16px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:white}.place-picker .place-row{padding:12px}.place-picker .note{margin:12px;font-size:.75rem}#view-places h1,#view-place-edit h1{overflow-wrap:anywhere;line-height:1.2}.place-editor .field-hint{margin-top:7px}
+/* v21: focus route */
+:root{--bg:#faf9f5;--card:#fffefa;--text:#182c25;--muted:#78827b;--border:#e3e5dd;--panel:#efefe8;--blue:#245c43;--blue-soft:#e8efe5;--radius:18px}.app{padding-top:max(28px,env(safe-area-inset-top));padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}#view-route .focus-route-head{display:flex;align-items:center;justify-content:space-between;min-height:48px;margin-bottom:22px}#view-route .focus-route-head h1{font-size:2rem;letter-spacing:-.045em;font-weight:750}#view-route .focus-route-head .route-menu{width:auto;min-width:64px;padding:0 10px;margin:0;align-self:auto;color:var(--blue);font-size:.85rem}#view-route .archive-route{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel);border-radius:12px;padding:6px 12px;margin-bottom:16px;font-size:.78rem;color:var(--muted)}#view-route .archive-route button{min-height:44px;border:0;background:transparent;color:var(--blue);font-size:.78rem;font-weight:600}#view-route .summary{padding:0;border:0;box-shadow:none;background:none;margin-bottom:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center}#view-route .progress-head{font-size:.87rem;font-weight:600}#view-route .progress-track{grid-column:1/-1;margin:0;height:5px;background:#e6e6df}#view-route .progress-fill{background:var(--blue)}#view-route .time-row{grid-column:2;grid-row:1;margin:0;border:0;padding:0;display:flex;gap:6px;align-items:center}#view-route .elapsed-time{font-size:.73rem;color:var(--text);font-weight:450;max-width:175px;line-height:1.4}#view-route .time-row.paused .elapsed-time{color:var(--blue)}#view-route .pause-btn{width:44px;height:44px;min-width:44px;border:1px solid #d9dcd3;border-radius:50%;background:transparent;color:var(--text);margin:0}#view-route .pause-btn svg{width:18px;height:18px}#view-route #deliveryList{display:flex;flex-direction:column;gap:0}#view-route .delivery-card{border:1px solid var(--border);border-radius:14px;padding:12px;margin:0 0 8px;background:var(--card);box-shadow:none;transition:background .18s,border-color .18s}#view-route .delivery-row{align-items:center;gap:10px}#view-route .delivery-title{font-size:.87rem;font-weight:650;line-height:1.3;letter-spacing:-.02em}#view-route .delivery-meta{font-size:.76rem;color:var(--muted);line-height:1.4;margin-top:4px}#view-route .delivery-note{font-size:.72rem;line-height:1.4;margin-top:5px}#view-route .delivery-footer{font-size:.7rem;margin-top:5px}#view-route .delivery-client{font-size:.72rem;color:var(--muted);margin-top:4px}#view-route .delivery-icon{width:36px;flex:0 0 36px;padding:0;font-size:.85rem;color:var(--blue)}#view-route .delivery-icon>svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}#view-route .delivery-controls{margin:0;flex:0 0 44px;gap:0}#view-route .map-btn{width:44px;height:44px;min-height:44px;color:var(--muted);border:0;border-radius:10px;background:transparent;display:grid;place-items:center;padding:0}#view-route .map-btn svg{width:21px;height:21px}#view-route .number-check{width:44px;height:44px;margin-left:-4px;background:none;border-radius:50%}#view-route .queue-number{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#e7ece2;color:#214d38;font-size:.82rem;font-weight:650;font-variant-numeric:tabular-nums}#view-route .queue-number svg{width:19px;height:19px}#view-route .number-check[aria-pressed=true] .queue-number{background:var(--blue);color:white}#view-route .queue-card .check-circle{width:26px;height:26px;border-radius:8px;border-color:#a2ada4}#view-route .queue-card.done{background:#f2f3ed;border-color:var(--border)}#view-route .queue-card.done .delivery-title,#view-route .queue-card.done .delivery-meta{color:#79857c}#view-route .queue-card.home-card{background:#f0f1eb;padding-top:10px;padding-bottom:10px;min-height:60px}#view-route .queue-card.home-card .delivery-title{font-size:.84rem}#view-route .queue-card.home-card .delivery-footer{font-size:.68rem}#view-route .queue-card.home-card .delivery-icon{color:#7b887e}#view-route .queue-card .deadline{color:var(--blue)}#view-route .queue-card.overdue .deadline{color:var(--danger)}#view-route .focus-hero{position:relative;background:#204f39;border:1px solid #204f39;border-radius:19px;padding:18px 15px 14px;color:#fbfaf2;box-shadow:0 5px 15px #1b4a3310;margin-bottom:7px;overflow:hidden}#view-route .focus-hero .delivery-row{display:grid;grid-template-columns:minmax(0,1fr) 46px;align-items:start;gap:0}#view-route .focus-hero .delivery-icon{grid-column:2;grid-row:1;width:46px;position:relative;z-index:1;color:#e9f0e3;padding-top:5px}#view-route .focus-hero .delivery-icon>svg{width:45px;height:45px;stroke-width:1.2}#view-route .focus-hero .delivery-main{grid-column:1/-1;grid-row:1;min-width:0}#view-route .focus-hero .next-label{display:table;width:auto;max-width:calc(100% - 57px);margin:0 0 12px;background:#ffffff18;color:#f5f7ee;border-radius:20px;padding:5px 10px;font-size:.63rem;font-weight:600;line-height:1.3;letter-spacing:.09em;text-transform:uppercase}#view-route .focus-hero .delivery-title{font-size:1.5rem;font-weight:700;line-height:1.2;letter-spacing:-.035em;max-width:100%}#view-route .focus-hero .delivery-meta{font-size:1.04rem;line-height:1.35;color:#f6f6ef;margin-top:8px;font-weight:550}#view-route .focus-hero .delivery-footer{margin-top:6px;font-size:.88rem}#view-route .focus-hero .deadline{font-weight:450;color:#f2f3e9}#view-route .focus-hero.overdue .deadline{color:#ffd1c5}#view-route .focus-hero .delivery-note,#view-route .focus-hero .delivery-client{font-size:.78rem;color:#c2d3c4;margin-top:6px}#view-route .focus-hero .delivery-note a,#view-route .focus-hero .delivery-client a{color:#edf6e4}#view-route .focus-hero .delivery-controls{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:15px;flex-basis:auto;align-items:stretch}#view-route .focus-hero .map-btn,#view-route .focus-hero .done-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:auto;min-height:48px;border-radius:12px;font-size:.78rem;font-weight:600;padding:8px 7px}#view-route .focus-hero .map-btn{background:#faf8f0;color:#214d38;border:1px solid #faf8f0}#view-route .focus-hero .done-btn{background:transparent;color:#faf8f0;border:1px solid #cfdecf}#view-route .focus-hero .map-btn svg{width:22px;height:22px;flex-shrink:0}#view-route .focus-hero .check-circle{width:22px;height:22px;flex-shrink:0;border:1.3px solid #e7eee1;color:#e7eee1}#view-route .focus-hero .check-circle svg{width:15px;height:15px}#view-route .focus-hero.home-card .delivery-controls{flex-direction:unset}#view-route .focus-enter{animation:focus-appear .22s ease-out}@keyframes focus-appear{from{opacity:.5;transform:translateY(6px)}to{opacity:1;transform:none}}#view-route .queue-heading{margin:15px 4px 9px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}#view-route .queue-heading h2{margin:0;color:var(--text);font-size:1.2rem;letter-spacing:-.03em;font-weight:700}#view-route .queue-heading>span{color:var(--muted);font-size:.71rem}#view-route .focus-fare{margin:0 0 6px;padding:0;min-height:44px;display:flex;align-items:center}#view-route .focus-fare:before{display:none}#view-route .focus-fare .fare-chip{padding:0 8px;color:var(--muted);background:transparent;width:auto;min-width:44px;display:flex;gap:6px}#view-route .focus-fare .fare-chip span{font-size:.71rem}#view-route .focus-fare .fare-chip:not(.recorded) span{border:1px solid #dfe3d8;background:#f1f3ea}#view-route .focus-fare .fare-chip.recorded{border-radius:12px;background:#ebefe4;padding:0 12px;margin-left:4px}#view-route .focus-fare .fare-chip.recorded span{background:transparent;border-radius:0;color:#31503a;font-size:.76rem;padding:0}#view-route .focus-fare .fare-chip.recorded:before{content:'₽';font-size:.85rem;color:#406a4d}#view-route .focus-fare .fare-chip.recorded:after{content:'Проезд';font-size:.69rem;color:#79867a}#view-route .focus-completed{display:none!important}#view-route #deliveryList.completed-expanded .focus-completed,#view-route #deliveryList.reordering .focus-completed{display:flex!important}#view-route .completed-toggle{width:100%;margin:8px 0 10px;min-height:48px;border:0;border-radius:0;padding:8px 4px;background:none;font-size:.87rem;color:#657068;font-weight:600}#view-route .completed-toggle svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#view-route .add-btn{background:transparent;border:1px solid var(--blue);border-radius:12px;margin-top:8px;color:var(--blue);font-size:.9rem;min-height:48px}.tabs{background:#faf9f5f5;border-top:1px solid #e5e5de}.tabs .tab{font-size:.72rem;font-weight:500;gap:5px;min-height:54px}.tab.active{color:var(--blue)}.tab svg{width:23px;height:23px}#view-route .route-result{display:flex;gap:12px;align-items:center;padding:18px 14px;background:var(--blue-soft);border:1px solid #d9e4d3;border-radius:18px;margin-bottom:16px}#view-route .result-check{color:var(--blue);display:grid;place-items:center;width:38px;height:38px;flex-shrink:0}#view-route .result-check svg{width:30px;height:30px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}#view-route .route-result strong{display:block;font-size:1.03rem}#view-route .route-result div>span{display:block;font-size:.75rem;color:var(--muted);margin-top:4px}#view-route #deliveryList.reordering>*{order:0!important}#view-route #deliveryList.reordering .queue-heading,#view-route #deliveryList.reordering .completed-toggle,#view-route #deliveryList.reordering .fare-leg,#view-route #deliveryList.reordering .route-result{display:none!important}#view-route #deliveryList.reordering .focus-hero{background:var(--card);border-color:var(--border);color:var(--text);padding:12px;box-shadow:none;border-radius:14px;overflow:visible;animation:none}#view-route #deliveryList.reordering .focus-hero .delivery-row{display:flex;gap:10px;align-items:center}#view-route #deliveryList.reordering .focus-hero .delivery-icon{width:36px;flex-basis:36px;position:static;padding:0;color:var(--blue)}#view-route #deliveryList.reordering .focus-hero .delivery-icon svg{width:27px;height:27px}#view-route #deliveryList.reordering .focus-hero .next-label{display:none}#view-route #deliveryList.reordering .focus-hero .delivery-title{font-size:.87rem}#view-route #deliveryList.reordering .focus-hero .delivery-meta{font-size:.76rem;color:var(--muted);font-weight:400;margin-top:4px}#view-route #deliveryList.reordering .focus-hero .delivery-footer,#view-route #deliveryList.reordering .focus-hero .delivery-note,#view-route #deliveryList.reordering .focus-hero .delivery-client{font-size:.72rem;color:var(--muted);margin-top:4px}#view-route #deliveryList.reordering .focus-hero .deadline{color:var(--muted)}#view-route #deliveryList.reordering .delivery-controls{display:none}#view-route #deliveryList.reordering .delivery-icon .number-check{pointer-events:none}#view-route #deliveryList.reordering .delivery-card.dragging{z-index:5;box-shadow:0 8px 25px #25452f25;opacity:.9;background:#f2f7ec}
+@media(max-width:350px){#view-route .focus-route-head{margin-bottom:16px}#view-route .focus-route-head h1{font-size:1.85rem}#view-route .summary{gap:6px 8px}#view-route .progress-head{font-size:.79rem}#view-route .elapsed-time{font-size:.65rem;max-width:120px}#view-route .focus-hero{padding:16px 13px 13px}#view-route .focus-hero .delivery-title{font-size:1.4rem}#view-route .focus-hero .delivery-meta{font-size:.97rem}#view-route .focus-hero .done-btn,#view-route .focus-hero .map-btn{font-size:.7rem;gap:5px}#view-route .delivery-card.queue-card{padding:10px}#view-route .queue-heading>span{font-size:.66rem}}
+@media(min-width:480px){#view-route .focus-hero{padding:22px}#view-route .focus-hero .delivery-title{font-size:1.8rem}#view-route .focus-hero .delivery-meta{font-size:1.2rem}#view-route .focus-hero .delivery-controls{margin-top:20px}#view-route .focus-hero .map-btn,#view-route .focus-hero .done-btn{font-size:.9rem}}
+
+#view-route .delivery-icon{height:auto;align-self:center;margin:0;background:none!important;box-shadow:none!important;width:36px!important;flex-basis:36px!important;font-size:.85rem!important}#view-route .focus-hero .delivery-icon{width:46px!important;flex-basis:46px!important;align-self:start;margin:0}#view-route .focus-fare{border:0;justify-content:flex-start}#view-route .focus-hero .delivery-title{padding-right:0}#view-route .focus-hero .delivery-icon{top:0}
+
+#view-route .delivery-title{color:var(--text);font-weight:650}#view-route .focus-hero .delivery-title{color:#fafaf2;font-weight:700;margin:0}#view-route .delivery-meta{font-weight:400}#view-route .focus-hero .delivery-meta{font-weight:550}#view-route .queue-card.done .delivery-title{color:#79857c}#view-route .focus-hero .delivery-icon{grid-row:1;align-self:start;position:absolute;right:0;top:0}#view-route .focus-hero .delivery-row{position:relative}#view-route .focus-hero .next-label{min-height:24px;margin-bottom:14px}#view-route .focus-hero .delivery-icon>svg{width:45px;height:45px}#view-route .focus-fare .fare-chip{min-height:44px}#view-route .queue-card{min-height:68px}#view-route .queue-card.home-card .delivery-title{font-weight:600}
+#view-route .delivery-row{width:100%}
+#view-route .focus-fare .fare-chip:not(.recorded) span{width:27px;height:27px;min-width:27px;border-radius:50%;font-size:.82rem;background:#f1f3ea;border:1px solid #dfe3d8}#view-route .focus-fare:has(.fare-chip:not(.recorded)){margin-top:-5px;margin-bottom:0}#view-route .focus-hero .delivery-title{padding-right:47px}#view-route .focus-hero .delivery-icon>svg{width:46px;height:46px}
 </style></head><body><main class="app">
 <section id="view-route" class="view active">
-<header class="route-head between"><div class="date-heading"><div class="eyebrow">Мой маршрут</div><h1 id="dateTitle"></h1><div id="dateSub" class="date-sub"></div><input id="dayPicker" type="date" aria-label="Выбрать дату"></div><button id="routeActions" class="icon-btn route-menu" aria-label="Настройки маршрута"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 3-.5 2-2 1-2-.5-2 3 1.5 1.5v3L3.5 15l2 3 2-.5 2 1 .5 2h4l.5-2 2-1 2 .5 2-3-1.5-1.5v-3L21 9l-2-3-2 .5-2-1-.5-2Z"/><circle cx="12" cy="12" r="3"/></svg></button></header>
-<section class="card summary"><div class="progress-head"><span id="deliveryCount"></span><span id="progressText" class="progress-count" aria-live="polite"></span></div><div id="progressTrack" class="progress-track" role="progressbar" aria-label="Прогресс доставок" aria-valuemin="0" aria-valuemax="100"><div id="progressFill" class="progress-fill"></div></div><div id="timeRow" class="time-row" hidden><div id="timeInfo" class="elapsed-time"></div><button id="pauseDay" class="pause-btn" type="button" aria-label="Поставить на паузу"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button></div></section>
-<div class="list-heading"><span>ОСТАНОВКИ</span><span id="remainingCount"></span></div><p id="reorderHint" class="note" hidden>Тяните за ≡ или нажимайте выше / ниже. Домашние этапы закреплены.</p><section id="deliveryList" aria-label="Остановки маршрута"></section><button id="toggleForm" class="add-btn">+ Добавить запись</button></section>
+<header class="focus-route-head"><h1>Маршрут</h1><button id="routeActions" class="icon-btn route-menu" hidden>Готово</button></header>
+<input id="dayPicker" class="sr-only" type="date" tabindex="-1" aria-label="Выбрать дату">
+<div id="archiveRoute" class="archive-route" hidden><span id="archiveLabel"></span><button id="archiveToday" type="button">Сегодня</button></div>
+<section class="summary"><div class="progress-head"><span id="deliveryCount" aria-live="polite"></span></div><div id="progressTrack" class="progress-track" role="progressbar" aria-label="Прогресс доставок" aria-valuemin="0" aria-valuemax="100"><div id="progressFill" class="progress-fill"></div></div><div id="timeRow" class="time-row" hidden><div id="timeInfo" class="elapsed-time"></div><button id="pauseDay" class="pause-btn" type="button" aria-label="Поставить на паузу"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button></div></section>
+<p id="reorderHint" class="note" hidden>Тяните за ≡ или нажимайте выше / ниже. Домашние этапы закреплены.</p><section id="deliveryList" aria-label="Остановки маршрута"></section><button id="toggleForm" class="add-btn">+ Добавить запись</button></section>
 <section id="view-profile" class="view">
 <header class="profile-head between"><div><h1>Обзор</h1></div><button id="profileSettings" class="icon-btn" aria-label="Настройки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 3-.5 2-2 1-2-.5-2 3 1.5 1.5v3L3.5 15l2 3 2-.5 2 1 .5 2h4l.5-2 2-1 2 .5 2-3-1.5-1.5v-3L21 9l-2-3-2 .5-2-1-.5-2Z"/><circle cx="12" cy="12" r="3"/></svg></button></header>
 <section id="profileCalendar" class="profile-calendar" aria-label="Календарь доставок">
@@ -218,91 +230,84 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
 
   const expandedStops=new Set();
   let profilePeriod='month';
+  let lastFocusId='';
   function renderRoute(){
-    const day=ensureDay(currentDate);
+    const day=ensureDay(currentDate),today=localDateString();
     $('dayPicker').value=currentDate;
-    $('dateTitle').innerHTML='<span class="date-number">'+currentDate.slice(8)+'</span><span>'+new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long'}).format(new Date(currentDate+'T12:00:00')).replace(/^\d+\s*/,'')+'</span>';
-    $('dateSub').textContent=new Intl.DateTimeFormat('ru-RU',{weekday:'long'}).format(new Date(currentDate+'T12:00:00'))+' · '+currentDate.slice(0,4);
-
-    const total=actualDeliveries(day).length;
-    const done=actualDeliveries(day).filter(x=>x.done).length;
-    const pct=total?done/total*100:0;
-    $('progressText').textContent=total?`${Math.round(pct)}%`:'';
+    $('archiveRoute').hidden=currentDate===today;
+    $('archiveLabel').textContent='Маршрут за '+prettyDate(currentDate).replace(' г.','');
+    const total=actualDeliveries(day).length,done=actualDeliveries(day).filter(x=>x.done).length,pct=total?done/total*100:0;
     $('deliveryCount').textContent=total?`${done} из ${total} ${plural(total,'доставки','доставок','доставок')}`:'Доставок пока нет';
-    $('remainingCount').textContent=total?`${total-done} осталось`:'';
-    $('progressTrack').setAttribute('aria-valuenow',Math.round(pct));
-    $('progressFill').style.width=`${pct}%`;
-    $('routeActions').innerHTML=reordering?'Готово':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 3-.5 2-2 1-2-.5-2 3 1.5 1.5v3L3.5 15l2 3 2-.5 2 1 .5 2h4l.5-2 2-1 2 .5 2-3-1.5-1.5v-3L21 9l-2-3-2 .5-2-1-.5-2Z"/><circle cx="12" cy="12" r="3"/></svg>';
-    $('routeActions').classList.toggle('ordering',reordering);
-    $('routeActions').setAttribute('aria-label',reordering?'Завершить перестановку':'Настройки маршрута');
+    $('progressTrack').setAttribute('aria-valuenow',Math.round(pct));$('progressFill').style.width=pct+'%';
+    $('routeActions').hidden=!reordering;$('routeActions').textContent='Готово';$('routeActions').setAttribute('aria-label','Завершить перестановку');
     $('reorderHint').hidden=!reordering;
-    $('deliveryList').classList.toggle('reordering',reordering);
+    const list=$('deliveryList');list.replaceChildren();list.classList.toggle('reordering',reordering);
+    const key=currentDate+':focus-completed',expanded=expandedStops.has(key);list.classList.toggle('completed-expanded',expanded);
     renderElapsedTime();
-
-    const list=$('deliveryList');
-    list.innerHTML='';
+    const pending=day.deliveries.filter(d=>!d.done),focus=!day.startedAt?homeStage(day,'start'):day.finishedAt?null:pending[0]||homeStage(day,'finish');
     const stages=[homeStage(day,'start'),...day.deliveries,homeStage(day,'finish')];
-
-    const now=new Date();
-    const remaining=day.deliveries.filter(d=>!d.done&&d.deadline).map(d=>({id:d.id,time:new Date(currentDate+'T'+d.deadline+':00').getTime()}));
-    const next=remaining.filter(d=>d.time>=now.getTime()).sort((a,b)=>a.time-b.time)[0];
-    const nextStop=day.deliveries.find(d=>!d.done);
-    const groups=new Map();
-    if(!reordering){
-      for(let i=0;i<stages.length;){
-        if(!stages[i].done){i++;continue}
-        const run=[];while(i<stages.length&&stages[i].done)run.push(stages[i++]);
-        const count=run.filter(d=>!d.kind).length;if(count)for(const d of run)groups.set(d.id,{key:run[0].id,count});
-      }
-    }
-    const bodies=new Map();
-    stages.forEach((d,stageIndex)=>{
-      let target=list;const group=groups.get(d.id);
-      if(group){
-        if(!bodies.has(group.key)){
-          const wrapper=document.createElement('section');wrapper.className='completed-group';
-          const key=currentDate+':'+group.key,expanded=expandedStops.has(key);
-          const toggle=document.createElement('button');toggle.className='completed-toggle';toggle.type='button';toggle.setAttribute('aria-expanded',String(expanded));
-          toggle.innerHTML=`<span>Выполнено · ${group.count}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>`;
-          const body=document.createElement('div');body.className='completed-stops';body.id='stops-'+bodies.size;body.hidden=!expanded;toggle.setAttribute('aria-controls',body.id);
-          toggle.addEventListener('click',()=>{body.hidden=!body.hidden;toggle.setAttribute('aria-expanded',String(!body.hidden));if(body.hidden)expandedStops.delete(key);else expandedStops.add(key)});
-          wrapper.append(toggle,body);list.appendChild(wrapper);bodies.set(group.key,body);
-        }
-        target=bodies.get(group.key);
-      }
-      if(stageIndex>0&&!reordering){const from=stages[stageIndex-1];const sameGroup=group&&groups.get(from.id)?.key===group.key;const leg=makeFareLeg(day,from,d);sameGroup?target.appendChild(leg):group?list.insertBefore(leg,target.parentElement):list.appendChild(leg)}
-      const overdue=!d.done&&d.deadline&&new Date(currentDate+'T'+d.deadline+':00')<now;
-      const nearest=!d.done&&d.id===next?.id&&currentDate===localDateString();
-      const card=document.createElement('article');
-      card.className='card delivery-card'+(d.kind?' home-card':'')+(!d.kind&&!isDelivery(d)?' stop-card':'')+(String(d.address||'').trim()?' has-address':'')+(d.done?' done':'')+(overdue?' overdue':'')+(nearest?' nearest':'')+(!reordering&&d.id===nextStop?.id?' next-stop':'');
-      card.dataset.id=d.id;
-      card.innerHTML=`<div class="delivery-row"><div class="delivery-icon" aria-hidden="true">${d.kind?'<svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg>':!isDelivery(d)?'<svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 0 0-16 0c0 6 8 13 8 13Z"/><circle cx="12" cy="9" r="3"/></svg>':day.deliveries.slice(0,day.deliveries.indexOf(d)+1).filter(isDelivery).length.toString().padStart(2,'0')}</div><div class="delivery-main">${!reordering&&d.id===nextStop?.id?'<div class="next-label">Следующая остановка</div>':''}${d.type==='warehouse'?'<div class="stop-label">Склад</div>':d.type==='stop'?'<div class="stop-label">Остановка</div>':''}<div class="delivery-title ${!d.address?'addressless':''}">${escapeHtml(d.title||'Доставка')}</div>${d.address?`<div class="delivery-meta">${escapeHtml(d.address)}</div>`:d.kind?'<button class="home-address-link">Указать домашний адрес</button>':''}${clientHtml(d)}${d.note?`<div class="delivery-note">${noteHtml(d.note)}</div>`:''}<div class="delivery-footer">${d.done?`<span class="delivery-status">${d.kind==='start'?'Выход':d.kind==='finish'?'Возвращение':!isDelivery(d)?'Посещение':'Выполнено'} ${timeOnly(d.completedAt)}</span>`:d.deadline?`<span class="deadline">${overdue?'Просрочено · ':nearest?'Ближайшая · ':''}до ${escapeHtml(d.deadline)}</span>`:''}</div></div><div class="delivery-controls"><button class="done-btn" type="button" aria-pressed="${Boolean(d.done)}" aria-label="${d.done?'Снять отметку':'Выполнить'}: ${escapeHtml(d.title)}"><span class="check-circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></span></button><button class="map-btn" type="button" aria-label="Открыть в картах: ${escapeHtml(d.title)}" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></svg></button></div></div>`;
-      card.classList.toggle('has-contact',Boolean(card.querySelector('.phone-link')));
-      card.querySelector('.done-btn').addEventListener('click',()=>toggleDelivery(day,d));
-      card.querySelector('.map-btn').addEventListener('click',()=>{if(!String(d.address||'').trim()){toast('Сначала укажите адрес');return}openMenu(d)});
-      const main=card.querySelector('.delivery-main');if(!reordering&&!d.kind)enableHold(card);
-      if(!reordering){
-        main.tabIndex=0;main.setAttribute('role','button');main.setAttribute('aria-haspopup','dialog');main.setAttribute('aria-label',(d.kind?'Настройки: ':'Изменить запись: ')+d.title);
-        const edit=()=>{if(performance.now()-lastDayChange<350||performance.now()<suppressClickUntil)return;if(d.kind){if(d.done)openTimeForm(d);else openHomeForm()}else openForm(d)};
-        card.querySelector('.delivery-icon').addEventListener('click',()=>{main.focus({preventScroll:true});edit()});
-        main.addEventListener('click',e=>{if(!e.target.closest('a,button'))edit()});
-        main.addEventListener('keydown',e=>{if(e.target===main&&(e.key==='Enter'||e.key===' ')){e.preventDefault();edit()}});
-      }
-      card.querySelector('.home-address-link')?.addEventListener('click',openHomeForm);
-      if(reordering&&!d.kind){
-        card.querySelector('.delivery-controls').remove();
-        const controls=document.createElement('div');controls.className='reorder-controls';
-        const index=day.deliveries.indexOf(d);
-        controls.innerHTML=`<button class="drag-handle" aria-label="Перетащить: ${escapeHtml(d.title)}">≡</button><div class="move-row"><button class="move-btn move-up" aria-label="Выше: ${escapeHtml(d.title)}" ${index===0?'disabled':''}>↑</button><button class="move-btn move-down" aria-label="Ниже: ${escapeHtml(d.title)}" ${index===day.deliveries.length-1?'disabled':''}>↓</button></div>`;
-        card.querySelector('.delivery-row').appendChild(controls);
-        controls.querySelector('.move-up').addEventListener('click',()=>moveDelivery(d.id,-1));
-        controls.querySelector('.move-down').addEventListener('click',()=>moveDelivery(d.id,1));
-        controls.querySelector('.drag-handle').addEventListener('pointerdown',e=>startDrag(e,card));
-      }
-      target.appendChild(card);
+    const now=new Date(),nearest=day.deliveries.filter(d=>!d.done&&d.deadline).map(d=>({id:d.id,time:new Date(currentDate+'T'+d.deadline+':00').getTime()})).filter(d=>d.time>=now.getTime()).sort((a,b)=>a.time-b.time)[0];
+    const queue=pending.filter(d=>d.id!==focus?.id),queuedDeliveryCount=queue.filter(isDelivery).length;
+    const completed=stages.filter(d=>d.done&&d.kind!=='finish'),completedRecords=completed.filter(d=>!d.kind).length;
+    const finishOrder=20+day.deliveries.length*3,completedBase=finishOrder+100;
+    if(day.finishedAt&&!reordering){const status=document.createElement('section');status.className='route-result';status.style.order='-5';status.innerHTML='<span class="result-check">'+checkSvg()+'</span><div><strong>Маршрут завершён</strong><span>'+escapeHtml(durationText(dayTimes(day).work))+' · '+done+' из '+total+' доставок · '+escapeHtml(money(fareTotal(day)))+'</span></div>';list.append(status)}
+    if(queue.length&&!reordering){const heading=document.createElement('div');heading.className='queue-heading';heading.style.order='8';heading.innerHTML='<h2>Дальше</h2><span>'+queue.length+' '+plural(queue.length,'остановка','остановки','остановок')+(queuedDeliveryCount!==queue.length?' · '+queuedDeliveryCount+' '+plural(queuedDeliveryCount,'доставка','доставки','доставок'):'')+'</span>';list.append(heading)}
+    const cardOrders=new Map();
+    stages.forEach((d,i)=>{
+      const hero=!reordering&&d.id===focus?.id,isCompleted=d.done&&d.kind!=='finish';
+      const order=reordering?i*3:hero?0:isCompleted?completedBase+i*3:d.kind==='finish'?finishOrder:10+day.deliveries.indexOf(d)*3;
+      cardOrders.set(d.id,order);
+      const card=buildFocusCard(day,d,{hero,reordering,nearest:d.id===nearest?.id&&currentDate===today,overdue:!d.done&&d.deadline&&new Date(currentDate+'T'+d.deadline+':00')<now});
+      card.style.order=String(order);card.classList.toggle('focus-completed',isCompleted);
+      if(hero&&lastFocusId!==currentDate+':'+d.id)card.classList.add('focus-enter');
+      list.append(card);
     });
+    if(!reordering){
+      for(let i=1;i<stages.length;i++){
+        const from=stages[i-1],to=stages[i];
+        const leg=makeFareLeg(day,from,to),toCompleted=to.done&&to.kind!=='finish';
+        leg.classList.add('focus-fare');
+        if(toCompleted){leg.classList.add('focus-completed');leg.style.order=String(cardOrders.get(to.id)-1)}
+        else if(to.id===focus?.id){leg.style.order='4'}
+        else leg.style.order=String(cardOrders.get(to.id)-1);
+        // A final empty leg on a finished day would invite recording another ride.
+        if(day.finishedAt&&!leg.querySelector('.recorded'))leg.hidden=true;
+        list.append(leg);
+      }
+      if(completed.length){const toggle=document.createElement('button');toggle.type='button';toggle.className='completed-toggle';toggle.style.order=String(completedBase-10);toggle.setAttribute('aria-expanded',String(expanded));toggle.setAttribute('aria-controls','deliveryList');toggle.innerHTML='<span>'+(completedRecords?'Выполнено · '+completedRecords:'Выход из дома · '+timeOnly(day.startedAt))+'</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>';toggle.addEventListener('click',()=>{const open=!list.classList.contains('completed-expanded');list.classList.toggle('completed-expanded',open);toggle.setAttribute('aria-expanded',String(open));if(open)expandedStops.add(key);else expandedStops.delete(key)});list.append(toggle)}
+    }
+    lastFocusId=focus?currentDate+':'+focus.id:'';
+    $('toggleForm').textContent='+ Добавить запись';
   }
-
+  function checkSvg(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg>'}
+  function mapSvg(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3ZM9 3v15M15 6v15"/></svg>'}
+  function homeSvg(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10"/></svg>'}
+  function cubeSvg(){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5v9l-9 5-9-5V8ZM3 8l9 5 9-5M12 13v9"/></svg>'}
+  function buildFocusCard(day,d,options){
+    const {hero,reordering,nearest,overdue}=options,number=day.deliveries.slice(0,day.deliveries.indexOf(d)+1).filter(isDelivery).length.toString().padStart(2,'0');
+    const card=document.createElement('article');card.dataset.id=d.id;card.className='delivery-card'+(hero?' focus-hero':' queue-card')+(d.kind?' home-card':'')+(d.done?' done':'')+(overdue?' overdue':'')+(nearest?' nearest':'');
+    const icon=d.kind?homeSvg():d.type==='warehouse'?cubeSvg():d.type==='stop'?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-7 8-13a8 8 0 0 0-16 0c0 6 8 13 8 13Z"/><circle cx="12" cy="9" r="3"/></svg>':hero?cubeSvg():number;
+    const type=d.kind==='start'?'Выход из дома':d.kind==='finish'?'Возвращение':d.type==='warehouse'?'Склад':d.type==='stop'?'Остановка':'Доставка';
+    const state=d.done?`${d.kind==='start'?'Выход':d.kind==='finish'?'Возвращение':!isDelivery(d)?'Посещение':'Выполнено'} ${timeOnly(d.completedAt)}`:d.deadline?`${overdue?'Просрочено · ':nearest&&!hero?'Ближайшая · ':''}до ${d.deadline}`:'';
+    const numberCheck=!hero&&!d.kind;
+    card.innerHTML='<div class="delivery-row"><div class="delivery-icon" aria-hidden="'+(!numberCheck)+'">'+(numberCheck?'<button class="done-btn number-check" type="button" aria-pressed="'+Boolean(d.done)+'" aria-label="'+(d.done?'Снять отметку':'Выполнить')+': '+escapeHtml(d.title)+'"><span class="queue-number">'+(d.done?checkSvg():icon)+'</span></button>':icon)+'</div><div class="delivery-main">'+(hero?'<div class="next-label">Сейчас · '+type+'</div>':'')+'<div class="delivery-title">'+escapeHtml(d.title||'Доставка')+'</div>'+(!d.kind&&d.address||hero&&d.address?'<div class="delivery-meta">'+escapeHtml(d.address)+'</div>':'')+(!d.kind?clientHtml(d):'')+(hero&&state?'<div class="delivery-footer"><span class="deadline">'+escapeHtml(state)+'</span></div>':'')+(d.note?'<div class="delivery-note">'+noteHtml(d.note)+'</div>':'')+(!hero&&state?'<div class="delivery-footer"><span class="'+(d.done?'delivery-status':'deadline')+'">'+escapeHtml(state)+'</span></div>':'')+'</div><div class="delivery-controls">'+(hero?'<button class="map-btn" type="button" aria-label="Открыть в картах: '+escapeHtml(d.title)+'" aria-haspopup="dialog">'+mapSvg()+'<span>Открыть карты</span></button>':'')+(!numberCheck?'<button class="done-btn" type="button" aria-pressed="'+Boolean(d.done)+'" aria-label="'+(d.done?'Снять отметку':'Выполнить')+': '+escapeHtml(d.title)+'"><span class="check-circle">'+checkSvg()+'</span>'+(hero?'<span>'+(d.kind==='start'?'Вышел из дома':d.kind==='finish'?'Я дома':'Выполнено')+'</span>':'')+'</button>':'')+(!hero&&!d.kind?'<button class="map-btn" type="button" aria-label="Открыть в картах: '+escapeHtml(d.title)+'" aria-haspopup="dialog">'+mapSvg()+'</button>':'')+'</div></div>';
+    card.querySelector('.done-btn').addEventListener('click',()=>toggleDelivery(day,d));
+    card.querySelector('.map-btn')?.addEventListener('click',()=>{if(!String(d.address||'').trim()){if(d.kind)openHomeForm();else toast('Сначала укажите адрес');return}openMenu(d)});
+    const main=card.querySelector('.delivery-main');
+    if(!reordering){
+      if(!d.kind)enableHold(card);
+      main.tabIndex=0;main.setAttribute('role','button');main.setAttribute('aria-haspopup','dialog');main.setAttribute('aria-label',(d.kind?'Настройки: ':'Изменить запись: ')+d.title);
+      const edit=()=>{if(performance.now()-lastDayChange<350||performance.now()<suppressClickUntil)return;if(d.kind){if(d.done)openTimeForm(d);else openHomeForm()}else openForm(d)};
+      if(!numberCheck)card.querySelector('.delivery-icon').addEventListener('click',edit);
+      main.addEventListener('click',e=>{if(!e.target.closest('a,button'))edit()});main.addEventListener('keydown',e=>{if(e.target===main&&(e.key==='Enter'||e.key===' ')){e.preventDefault();edit()}});
+    }else if(!d.kind){
+      card.querySelector('.delivery-controls').remove();card.querySelector('.delivery-icon').innerHTML=icon;
+      const controls=document.createElement('div');controls.className='reorder-controls';const index=day.deliveries.indexOf(d);
+      controls.innerHTML='<button class="drag-handle" aria-label="Перетащить: '+escapeHtml(d.title)+'">≡</button><div class="move-row"><button class="move-btn move-up" aria-label="Выше: '+escapeHtml(d.title)+'" '+(index===0?'disabled':'')+'>↑</button><button class="move-btn move-down" aria-label="Ниже: '+escapeHtml(d.title)+'" '+(index===day.deliveries.length-1?'disabled':'')+'>↓</button></div>';
+      card.querySelector('.delivery-row').append(controls);controls.querySelector('.move-up').addEventListener('click',()=>moveDelivery(d.id,-1));controls.querySelector('.move-down').addEventListener('click',()=>moveDelivery(d.id,1));controls.querySelector('.drag-handle').addEventListener('pointerdown',e=>startDrag(e,card));
+    }
+    return card;
+  }
 
   function escapeHtml(v){
     return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -354,7 +359,7 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
         const cardId=origin?.closest?.('.delivery-card')?.dataset.id;
         const replacement=cardId?[...document.querySelectorAll('.delivery-card')].find(c=>c.dataset.id===cardId)?.querySelector(origin.classList.contains('map-btn')?'.map-btn':'.delivery-main'):null;
         const target=origin?.isConnected?origin:replacement||$('toggleForm');
-        (target?.getClientRects().length?target:target?.closest('.completed-group')?.querySelector('.completed-toggle')||$('toggleForm'))?.focus({preventScroll:true});
+        (target?.getClientRects().length?target:document.querySelector('#deliveryList .completed-toggle')||$('toggleForm'))?.focus({preventScroll:true});
       }
     }
     modalOrigins.delete(id);
@@ -621,7 +626,7 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
     const view=$('view-route');view.classList.remove('route-next','route-prev');void view.offsetWidth;view.classList.add('route-'+direction);
     window.scrollTo(0,0);
   }
-  function focusStage(id){const card=[...document.querySelectorAll('.delivery-card')].find(c=>c.dataset.id===id);(card?.getClientRects().length?card.querySelector('.done-btn'):card?.closest('.completed-group')?.querySelector('.completed-toggle'))?.focus({preventScroll:true})}
+  function focusStage(id){const card=[...document.querySelectorAll('.delivery-card')].find(c=>c.dataset.id===id);(card?.getClientRects().length?card.querySelector('.done-btn'):document.querySelector('#deliveryList .completed-toggle'))?.focus({preventScroll:true})}
   function toggleDelivery(day,d){
     if(d.kind==='start'){
       if(day.startedAt){
@@ -670,6 +675,7 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
     // A working/historical day's address stays fixed. New and unstarted days use the new default.
     save();hideModal('homeForm');renderRoute();toast('Домашний адрес сохранён');
   });
+  $('archiveToday').addEventListener('click',()=>changeDate(localDateString()));
   $('routeActions').addEventListener('click',()=>{
     if(reordering){reordering=false;renderRoute();toast('Порядок сохранён');return}
     openSettings();
