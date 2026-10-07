@@ -125,6 +125,21 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
 #view-route .route-separator{display:block!important;height:1px!important;min-height:1px!important;margin:13px 4px 19px;background:#cfd7cc}
 #view-route .route-separator.focus-completed{display:none!important}#view-route #deliveryList.completed-expanded .route-separator.focus-completed{display:block!important}
 #view-route #deliveryList.reordering .route-separator{display:none!important}
+
+/* v24: one horizontal action row, content-sized cards */
+#view-route .queue-card,#view-route .queue-card.home-card{padding:10px 8px;min-height:72px;margin:0 0 10px}
+#view-route .queue-card .delivery-row{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px}
+#view-route .queue-card .delivery-icon{width:44px!important;flex-basis:44px!important;align-self:center;margin:0;padding:0}
+#view-route .queue-card .map-btn{width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:12px;background:#e9eee4;color:var(--blue)}
+#view-route .queue-card .map-btn svg{width:22px;height:22px}
+#view-route .queue-card.done .map-btn{background:#e7ece2;color:#6d8172}
+#view-route .queue-card .delivery-main{min-width:0}
+#view-route .queue-card .delivery-controls{display:flex;flex-direction:row;align-items:center;justify-content:center;margin:0;width:44px}
+#view-route .queue-card .done-btn{margin:0;min-height:44px;min-width:44px}
+#view-route #deliveryList.reordering .queue-card .delivery-row{display:flex;align-items:center}
+#view-route #deliveryList.reordering .queue-card .delivery-icon{width:36px!important;flex-basis:36px!important}
+#view-route #deliveryList.reordering .queue-card .delivery-main{flex:1}
+#view-route #deliveryList.reordering .queue-card .delivery-icon .map-btn{display:none}
 </style></head><body><main class="app">
 <section id="view-route" class="view active">
 <header class="focus-route-head"><h1>Маршрут</h1><button id="routeActions" class="icon-btn route-menu" hidden>Готово</button></header>
@@ -280,15 +295,12 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
     const pending=day.deliveries.filter(d=>!d.done),focus=!day.startedAt?homeStage(day,'start'):day.finishedAt?null:pending[0]||homeStage(day,'finish');
     const stages=[homeStage(day,'start'),...day.deliveries,homeStage(day,'finish')];
     const now=new Date(),nearest=day.deliveries.filter(d=>!d.done&&d.deadline).map(d=>({id:d.id,time:new Date(currentDate+'T'+d.deadline+':00').getTime()})).filter(d=>d.time>=now.getTime()).sort((a,b)=>a.time-b.time)[0];
-    const queue=pending.filter(d=>d.id!==focus?.id),queuedDeliveryCount=queue.filter(isDelivery).length;
     const completed=stages.filter(d=>d.done),completedRecords=completed.filter(d=>!d.kind).length;
     const finishOrder=20+day.deliveries.length*3,completedBase=finishOrder+100;
     if(day.finishedAt&&!reordering){const status=document.createElement('section');status.className='route-result';status.style.order='-5';status.innerHTML='<span class="result-check">'+checkSvg()+'</span><div><strong>Маршрут завершён</strong><span>'+escapeHtml(durationText(dayTimes(day).work))+' · '+done+' из '+total+' доставок · '+escapeHtml(money(fareTotal(day)))+'</span></div>';list.append(status)}
-    const cardOrders=new Map();
     stages.forEach((d,i)=>{
       const hero=!reordering&&d.id===focus?.id,isCompleted=d.done;
       const order=reordering?i*3:hero?0:isCompleted?completedBase+i*3:d.kind==='finish'?finishOrder:10+day.deliveries.indexOf(d)*3;
-      cardOrders.set(d.id,order);
       const card=buildFocusCard(day,d,{hero,reordering,nearest:d.id===nearest?.id&&currentDate===today,overdue:!d.done&&d.deadline&&new Date(currentDate+'T'+d.deadline+':00')<now});
       card.style.order=String(order);card.classList.toggle('focus-completed',isCompleted);
       if(hero&&lastFocusId!==currentDate+':'+d.id)card.classList.add('focus-enter');
@@ -307,11 +319,6 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
         holder.replaceChildren(leg.querySelector('button'));
 
       }
-      // All route dividers are decorative; fare controls live only in the hero.
-      const addDivider=(order,folded=false)=>{const separator=document.createElement('div');separator.className='route-separator'+(folded?' focus-completed':'');separator.style.order=String(order);separator.setAttribute('aria-hidden','true');list.append(separator)};
-      const waiting=stages.filter(d=>!d.done&&d.id!==focus?.id);
-      waiting.forEach((d,i)=>{if(i===0&&focus)addDivider(4);else if(i>0)addDivider(cardOrders.get(d.id)-1)});
-      completed.forEach((d,i)=>{if(i>0)addDivider(cardOrders.get(d.id)-1,true)});
       if(completed.length){const toggle=document.createElement('button');toggle.type='button';toggle.className='completed-toggle';toggle.style.order=String(completedBase-10);toggle.setAttribute('aria-expanded',String(expanded));toggle.setAttribute('aria-controls','deliveryList');toggle.innerHTML='<span>'+(completedRecords?'Выполнено · '+completedRecords:'Выход из дома · '+timeOnly(day.startedAt))+'</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>';toggle.addEventListener('click',()=>{const open=!list.classList.contains('completed-expanded');list.classList.toggle('completed-expanded',open);toggle.setAttribute('aria-expanded',String(open));if(open)expandedStops.add(key);else expandedStops.delete(key)});list.append(toggle)}
     }
     lastFocusId=focus?currentDate+':'+focus.id:'';
@@ -328,7 +335,7 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
     const type=d.kind==='start'?'Выход из дома':d.kind==='finish'?'Возвращение':d.type==='warehouse'?'Склад':d.type==='stop'?'Остановка':'Доставка';
     const state=d.done?`${d.kind==='start'?'Выход':d.kind==='finish'?'Возвращение':!isDelivery(d)?'Посещение':'Выполнено'} ${timeOnly(d.completedAt)}`:d.deadline?`${overdue?'Просрочено · ':nearest&&!hero?'Ближайшая · ':''}до ${d.deadline}`:'';
     card.innerHTML=`<div class="delivery-row">
-      <div class="delivery-icon" aria-hidden="true">${hero?icon:'<span class="queue-number">'+icon+'</span>'}</div>
+      <div class="delivery-icon"${hero?' aria-hidden="true"':''}>${hero?icon:'<button class="map-btn" type="button" aria-label="Открыть в картах: '+escapeHtml(d.title)+'" aria-haspopup="dialog">'+mapSvg()+'</button>'}</div>
       <div class="delivery-main">
         ${hero?'<div class="next-label">Сейчас · '+type+'</div>':''}
         <div class="delivery-title">${escapeHtml(d.title||'Доставка')}</div>
@@ -341,7 +348,6 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
       <div class="delivery-controls">
         ${hero?'<button class="map-btn" type="button" aria-label="Открыть в картах: '+escapeHtml(d.title)+'" aria-haspopup="dialog">'+mapSvg()+'<span>Открыть карты</span></button>':''}
         <button class="done-btn" type="button" aria-pressed="${Boolean(d.done)}" aria-label="${d.done?'Снять отметку':'Выполнить'}: ${escapeHtml(d.title)}"><span class="check-circle">${checkSvg()}</span>${hero?'<span>'+(d.kind==='start'?'Вышел из дома':d.kind==='finish'?'Я дома':'Выполнено')+'</span>':''}</button>
-        ${!hero?'<button class="map-btn" type="button" aria-label="Открыть в картах: '+escapeHtml(d.title)+'" aria-haspopup="dialog">'+mapSvg()+'</button>':''}
       </div>
     </div>`;
     card.querySelector('.done-btn').addEventListener('click',()=>toggleDelivery(day,d));
@@ -351,7 +357,6 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
       if(!d.kind)enableHold(card);
       main.tabIndex=0;main.setAttribute('role','button');main.setAttribute('aria-haspopup','dialog');main.setAttribute('aria-label',(d.kind?'Настройки: ':'Изменить запись: ')+d.title);
       const edit=()=>{if(performance.now()-lastDayChange<350||performance.now()<suppressClickUntil)return;if(d.kind){if(d.done)openTimeForm(d);else openHomeForm()}else openForm(d)};
-      if(!hero)card.querySelector('.delivery-icon').addEventListener('click',edit);
       main.addEventListener('click',e=>{if(!e.target.closest('a,button'))edit()});main.addEventListener('keydown',e=>{if(e.target===main&&(e.key==='Enter'||e.key===' ')){e.preventDefault();edit()}});
     }else if(!d.kind){
       card.querySelector('.delivery-controls').remove();card.querySelector('.delivery-icon').innerHTML=icon;
