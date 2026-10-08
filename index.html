@@ -140,6 +140,23 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
 #view-route #deliveryList.reordering .queue-card .delivery-icon{width:36px!important;flex-basis:36px!important}
 #view-route #deliveryList.reordering .queue-card .delivery-main{flex:1}
 #view-route #deliveryList.reordering .queue-card .delivery-icon .map-btn{display:none}
+
+/* v25: compact contact text and independent communication actions */
+#view-route .queue-card.has-contact-actions .delivery-row{grid-template-columns:44px minmax(0,1fr) 44px 44px;gap:4px}
+#view-route .contact-actions{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;gap:0;color:var(--blue)}
+#view-route .contact-actions a{display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;color:inherit;text-decoration:none;border-radius:10px;touch-action:manipulation}
+#view-route .contact-actions svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#view-route .contact-actions a:focus-visible{outline:3px solid var(--blue);outline-offset:-2px}
+#view-route .queue-card .client-line{display:block;margin:3px 0 0;font-size:.72rem;line-height:1.3}
+#view-route .queue-card .delivery-title{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#view-route .queue-card .delivery-meta,#view-route .queue-card .delivery-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#view-route .queue-card .delivery-meta{line-height:1.3;margin:3px 0 0}
+#view-route .queue-card .client-line span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view-route .queue-card .delivery-footer{margin:3px 0 0;line-height:1.3}
+#view-route .queue-card .delivery-note{margin:3px 0 0;line-height:1.3}
+#view-route .focus-hero .contact-actions{color:#edf6e4}
+#view-route #deliveryList.reordering .contact-actions{display:none}
+#view-route #deliveryList.reordering .queue-card.has-contact-actions .delivery-row{display:flex;gap:8px}
 </style></head><body><main class="app">
 <section id="view-route" class="view active">
 <header class="focus-route-head"><h1>Маршрут</h1><button id="routeActions" class="icon-btn route-menu" hidden>Готово</button></header>
@@ -340,16 +357,18 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
         ${hero?'<div class="next-label">Сейчас · '+type+'</div>':''}
         <div class="delivery-title">${escapeHtml(d.title||'Доставка')}</div>
         ${d.address?'<div class="delivery-meta">'+escapeHtml(d.address)+'</div>':''}
-        ${!d.kind?clientHtml(d):''}
+        ${!d.kind?clientHtml(d,hero):''}
         ${hero&&state?'<div class="delivery-footer"><span class="deadline">'+escapeHtml(state)+'</span></div>':''}
         ${d.note?'<div class="delivery-note">'+noteHtml(d.note)+'</div>':''}
         ${!hero&&state?'<div class="delivery-footer"><span class="'+(d.done?'delivery-status':'deadline')+'">'+escapeHtml(state)+'</span></div>':''}
       </div>
+      ${!hero&&!d.kind?contactActionsHtml(d):''}
       <div class="delivery-controls">
         ${hero?'<button class="map-btn" type="button" aria-label="Открыть в картах: '+escapeHtml(d.title)+'" aria-haspopup="dialog">'+mapSvg()+'<span>Открыть карты</span></button>':''}
         <button class="done-btn" type="button" aria-pressed="${Boolean(d.done)}" aria-label="${d.done?'Снять отметку':'Выполнить'}: ${escapeHtml(d.title)}"><span class="check-circle">${checkSvg()}</span>${hero?'<span>'+(d.kind==='start'?'Вышел из дома':d.kind==='finish'?'Я дома':'Выполнено')+'</span>':''}</button>
       </div>
     </div>`;
+    card.classList.toggle('has-contact-actions',Boolean(card.querySelector('.contact-actions')));
     card.querySelector('.done-btn').addEventListener('click',()=>toggleDelivery(day,d));
     card.querySelector('.map-btn')?.addEventListener('click',()=>{if(!String(d.address||'').trim()){if(d.kind)openHomeForm();else toast('Сначала укажите адрес');return}openMenu(d)});
     const main=card.querySelector('.delivery-main');
@@ -373,11 +392,21 @@ html.scroll-locked{overflow:hidden;overscroll-behavior:none}body.modal-open{posi
 
   // Link only full Russian numbers; short codes and order IDs stay plain text.
 
-  function clientHtml(d){
+  function contactActionsHtml(d){
+    const raw=String(d.phone||'').trim(),digits=raw.replace(/[^0-9]/g,'');
+    if(digits.length<7||digits.length>15)return '';
+    let international=digits;
+    if(digits.length===11&&digits.startsWith('8'))international='7'+digits.slice(1);
+    else if(digits.length===10&&!raw.startsWith('+'))international='7'+digits;
+    else if(raw.startsWith('00'))international=digits.slice(2);
+    const tel=raw.startsWith('+')||international!==digits?'+'+international:digits;
+    const whatsapp=international.length>=10&&international.length<=15&&!international.startsWith('0');
+    return `<div class="contact-actions"><a href="tel:${tel}" aria-label="Позвонить: ${escapeHtml(d.clientName||d.phone)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3 3 6c0 7 8 15 15 15l3-3-5-4-2 2c-3-1-5-3-6-6l2-2Z"/></svg></a>${whatsapp?`<a href="https://wa.me/${international}" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp: ${escapeHtml(d.clientName||d.phone)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.7 7.4L3 20l1.2-4.6A8.5 8.5 0 1 1 20.5 11.5Z"/><path d="m8 7-1 2c1 4 3 6 7 7l2-1-2-2-1 1c-2-1-3-2-4-4l1-1Z"/></svg></a>`:''}</div>`;
+  }
+  function clientHtml(d,hero=false){
     if(!d.clientName&&!d.phone)return '';
-    const digits=String(d.phone||'').replace(/[^0-9]/g,''),normalized=digits.length===11&&digits[0]==='8'?'+7'+digits.slice(1):(String(d.phone||'').trim().startsWith('+')?'+':'')+digits;
-    const call=digits.length>=7&&digits.length<=15?`<a href="tel:${normalized}" aria-label="Позвонить: ${escapeHtml(d.phone)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3 3 6c0 7 8 15 15 15l3-3-5-4-2 2c-3-1-5-3-6-6l2-2Z"/></svg></a>`:escapeHtml(d.phone||'');
-    return `<div class="client-line"><span>${escapeHtml(d.clientName||'Контакт')}</span>${call}</div>`;
+    const actions=hero?contactActionsHtml(d):'';
+    return `<div class="client-line"><span>${escapeHtml(d.clientName||'Контакт')}</span>${actions}</div>`;
   }
   function noteHtml(value){
     const text=String(value??''),pattern=/\+?[78][ \u00a0-]*(?:\(\d{3}\)|\d{3})[ \u00a0-]*\d{3}[ \u00a0-]*\d{2}[ \u00a0-]*\d{2}/g;
