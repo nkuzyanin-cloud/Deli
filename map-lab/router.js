@@ -153,9 +153,12 @@
     prepareStations() {
       const stations = [], indices = new Map();
       this.metro.stations.forEach((s, i) => {
+        // OSM maps the two branches of line 4 as 4 / 4А / 4A.
+        const line = /^4[AА]$/i.test(s.line) ? '4' : s.line;
         // Opposite platforms on the same line are one station in this model.
-        let index = stations.findIndex(v => v.name === s.name && v.line === s.line && distance(v.p, s.p) < 400);
-        if (index < 0) { index = stations.length; stations.push({ ...s, outgoing: [] }); }
+        let index = stations.findIndex(v => v.name === s.name && v.line === line && distance(v.p, s.p) < 400);
+        if (index < 0) { index = stations.length; stations.push({ ...s, line, outgoing: [] }); }
+        else stations[index].entrances = [...(stations[index].entrances || []), ...(s.entrances || [])];
         indices.set(i, index);
       });
       this.metro.edges.forEach((e, i) => {
@@ -163,55 +166,92 @@
         if (a === b) return;
         if (!stations[a].outgoing.some(v => v.to === b)) stations[a].outgoing.push({ to: b, edge: i });
       });
-      stations.forEach(s => { s.snap = this.snap(s.p, 300); });
+      // Only mapped interchanges connect lines. Close stations are not proof
+      // of an underground passage (and must not become fake transfers).
+      for (const t of this.metro.transfers || []) {
+        const a = indices.get(t.a), b = indices.get(t.b);
+        if (a === undefined || b === undefined || a === b) continue;
+        for (const [from, to] of [[a, b], [b, a]]) {
+          if (!stations[from].outgoing.some(e => e.transfer && e.to === to))
+            stations[from].outgoing.push({ to, transfer: true, source: t.source });
+        }
+      }
+      stations.forEach(s => {
+        const entrances = (s.entrances || []).map(p => ({ p, snap: this.snap(p, 150) })).filter(v => v.snap);
+        const entry = entrances.sort((a, b) => a.snap.offset - b.snap.offset)[0];
+        s.access = entry?.p || s.p; s.accessApproximate = !entry;
+        s.snap = entry?.snap || this.snap(s.p, 300);
+      });
       return stations;
     }
-    metroPath(a, b, metroSpeed, dwell) {
+    metroPath(a, b, metroSpeed, dwell, transferMinutes = 5, waitMinutes = 0) {
       const queue = new Heap(), costs = Array(this.stations.length).fill(Infinity), prev = [];
       costs[a] = 0; queue.push([0, a]);
       while (queue.length) {
         const [cost, u] = queue.pop(); if (cost !== costs[u]) continue;
         if (u === b) {
-          const edges = [];
-          for (let v = b; v !== a; v = prev[v].from) edges.push(prev[v].edge);
+          const edges = [], transfers = [];
+          for (let v = b; v !== a; v = prev[v].from) {
+            const step = prev[v];
+            if (step.transfer) { const s = this.stations[step.from], t = this.stations[v];
+              edges.push({ mode: 'transfer', fromStation: s.name, toStation: t.name,
+                lineFrom: s.line, lineTo: t.line, coords: [s.p, t.p],
+                meters: distance(s.p, t.p), seconds: transferMinutes * 60,
+                source: step.source }); transfers.push(step);
+            } else edges.push({ mode: 'metro', ...this.metro.edges[step.edge], line: this.stations[step.from].line,
+              boarding: this.stations[step.from].name, alighting: this.stations[v].name,
+              seconds: this.metro.edges[step.edge].meters / (metroSpeed / 3.6) + dwell });
+          }
           edges.reverse();
-          return { seconds: cost, edges };
+          return { seconds: cost, parts: edges, transfers: transfers.length };
         }
         for (const e of this.stations[u].outgoing) {
-          const leg = this.metro.edges[e.edge], next = cost + leg.meters / (metroSpeed / 3.6) + dwell;
-          if (next < costs[e.to]) { costs[e.to] = next; prev[e.to] = { from: u, edge: e.edge }; queue.push([next, e.to]); }
+          const leg = this.metro.edges[e.edge], seconds = e.transfer ? (transferMinutes + waitMinutes) * 60 : leg.meters / (metroSpeed / 3.6) + dwell;
+          const next = cost + seconds;
+          if (next < costs[e.to]) { costs[e.to] = next; prev[e.to] = { from: u, ...e }; queue.push([next, e.to]); }
         }
       }
       return null;
     }
     mixed(from, to, options) {
-      const { walkSpeed, metroSpeed, dwell, accessMinutes } = options;
+      const { walkSpeed, metroSpeed, dwell, accessMinutes, transferMinutes = 5, waitMinutes = 0 } = options;
       const fallback = this.walk(from, to, walkSpeed);
       let best = fallback ? { mode: 'walk', seconds: fallback.seconds, meters: fallback.meters, parts: [fallback], names: fallback.names, snapOffsets: fallback.snapOffsets } : null;
-      const candidates = p => this.stations.map((s, i) => ({ s, i, d: distance(s.p, p) }))
+      const candidates = p => this.stations.map((s, i) => ({ s, i, d: distance(s.access, p) }))
         .filter(v => v.s.snap && v.d < 2300).sort((a, b) => a.d - b.d).slice(0, 5);
       const starts = candidates(from), ends = candidates(to), walkCache = new Map();
       const getWalk = (kind, item) => {
         const key = `${kind}:${item.i}`;
-        if (!walkCache.has(key)) walkCache.set(key, kind === 's' ? this.walk(from, item.s.p, walkSpeed, 300) : this.walk(item.s.p, to, walkSpeed, 300));
+        if (!walkCache.has(key)) walkCache.set(key, kind === 's' ? this.walk(from, item.s.access, walkSpeed, 300) : this.walk(item.s.access, to, walkSpeed, 300));
         return walkCache.get(key);
       };
       for (const a of starts) for (const b of ends) {
-        if (a.i === b.i || a.s.line !== b.s.line) continue;
-        const rail = this.metroPath(a.i, b.i, metroSpeed, dwell);
+        if (a.i === b.i) continue;
+        const rail = this.metroPath(a.i, b.i, metroSpeed, dwell, transferMinutes, waitMinutes);
         if (!rail) continue;
         const enter = getWalk('s', a), exit = getWalk('t', b);
         if (!enter || !exit) continue;
-        const seconds = enter.seconds + exit.seconds + rail.seconds + accessMinutes * 60 * 2;
+        const accessSeconds = accessMinutes * 60 * 2, waitSeconds = waitMinutes * 60 * (rail.transfers + 1);
+        // rail.seconds already contains waits after transfers.
+        const seconds = enter.seconds + exit.seconds + rail.seconds + accessSeconds + waitMinutes * 60;
         if (best && seconds >= best.seconds) continue;
-        const parts = [enter, ...rail.edges.map(i => ({ mode: 'metro', ...this.metro.edges[i] })), exit];
+        const parts = [enter, ...rail.parts, exit];
         best = { mode: 'metro', seconds, meters: parts.reduce((n, p) => n + p.meters, 0), parts,
-          boarding: a.s.name, alighting: b.s.name, line: a.s.line, stations: rail.edges.length,
+          boarding: a.s.name, alighting: b.s.name, line: a.s.line,
+          lines: [...new Set(rail.parts.filter(p => p.mode === 'metro').map(p => p.line))],
+          stations: rail.parts.filter(p => p.mode === 'metro').length, transfers: rail.transfers,
+          walkSeconds: enter.seconds + exit.seconds, rideSeconds: rail.parts.filter(p => p.mode === 'metro').reduce((n, p) => n + p.seconds, 0),
+          transferSeconds: rail.transfers * transferMinutes * 60, accessSeconds, waitSeconds,
+          accessApproximate: a.s.accessApproximate || b.s.accessApproximate,
           names: [...enter.names, ...exit.names], snapOffsets: [enter.snapOffsets[0], exit.snapOffsets[1]] };
       }
       return best;
     }
     route(stops, options) {
+      for (const [key, min, max] of [['walkSpeed',2,7], ['metroSpeed',15,70], ['dwell',0,120], ['accessMinutes',0,15], ['transferMinutes',1,15], ['waitMinutes',0,15]]) {
+        if ((options.mode === 'metro' || key === 'walkSpeed') && options[key] !== undefined &&
+          (!Number.isFinite(options[key]) || options[key] < min || options[key] > max)) throw new Error('Недопустимые параметры расчёта.');
+      }
       const legs = [];
       for (let i = 1; i < stops.length; i++) {
         const from = stops[i - 1], to = stops[i];

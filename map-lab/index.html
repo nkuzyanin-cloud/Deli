@@ -32,7 +32,7 @@
     <div class="intro"><span class="status-pill" id="offlineStatus">Подготовка…</span><span>Москва · центр и север</span></div>
     <section class="card map-card" aria-labelledby="mapHeading">
       <div class="map-heading"><h2 id="mapHeading">Проверяем локальный маршрут</h2><button class="icon-button" id="fitMap" aria-label="Показать весь маршрут" title="Показать маршрут"><svg><use href="#i-map"/></svg></button></div>
-      <div class="segmented" role="group" aria-label="Способ передвижения"><button id="walkMode" aria-pressed="true">Пешком</button><button id="metroMode" aria-pressed="false">Метро · модель</button></div>
+      <div class="segmented" role="group" aria-label="Способ передвижения"><button id="metroMode" aria-pressed="true">Метро + пешком</button><button id="walkMode" aria-pressed="false">Пешком</button></div>
       <div class="map-wrap" id="mapWrap">
         <canvas id="mapCanvas" aria-label="Офлайн-карта улиц и зданий. Адреса можно добавить через поиск ниже." tabindex="0"></canvas>
         <div class="map-loading" id="mapLoading" role="status"><div class="spinner"></div><strong id="loadTitle">Загружаем тестовую карту</strong><span id="loadDetail">Первый запуск: около 9 МБ. Затем можно без интернета.</span></div>
@@ -43,7 +43,7 @@
       </div>
       <div class="eta-panel" aria-live="polite"><div class="eta-top"><svg><use href="#i-clock"/></svg><strong id="eta">Добавьте две остановки</strong></div><span id="etaDetail">По реальным улицам и проходам, не по прямой</span><p id="estimateCaption">Приблизительное время · без учёта текущих пробок, вручения и перерывов</p></div>
     </section>
-    <div class="notice" id="modeNotice" hidden><svg><use href="#i-info"/></svg><p>Метро — экспериментальная модель по реальным путям OSM, <strong>не расписание</strong>. Только прямые поездки на одной линии: без пересадок, автобусов и ожидания. Если пешком быстрее, будет выбран пеший путь.</p></div>
+    <div class="notice" id="modeNotice"><svg><use href="#i-info"/></svg><p>Метро с пересадками и пешими подходами внутри тестовой зоны. Время приблизительное, <strong>без учёта пробок и онлайн-расписания</strong>. Автобусы, МЦК и МЦД пока не включены. Если пешком быстрее по модели, выберем пеший путь.</p></div>
     <section class="card stops-card" aria-labelledby="stopsHeading">
       <div class="section-heading"><h2 id="stopsHeading">Остановки</h2><span id="stopsCount">0 из 12</span></div>
       <form id="searchForm" autocomplete="off"><label class="search-box"><svg><use href="#i-search"/></svg><input id="addressSearch" type="search" placeholder="Например, Тверская, 10" aria-label="Поиск адреса в тестовой зоне" aria-controls="searchResults" aria-expanded="false" maxlength="200" enterkeyhint="search" disabled></label></form>
@@ -58,17 +58,18 @@
     <section class="card" id="legsCard" aria-labelledby="legsHeading" hidden><div class="section-heading"><h2 id="legsHeading">Участки маршрута</h2></div><div id="legsList"></div></section>
     <details class="card details-card"><summary>Параметры и результат теста<svg><use href="#i-info"/></svg></summary><div class="details-body">
       <label class="field">Скорость пешком, км/ч<input id="walkSpeed" type="number" value="4.8" min="2" max="7" step="0.1" inputmode="decimal"></label>
-      <div id="metroParameters" hidden><label class="field">Модельная скорость поезда, км/ч<input id="metroSpeed" type="number" value="35" min="15" max="70" step="1" inputmode="decimal"></label><label class="field">Остановка поезда, секунд<input id="metroDwell" type="number" value="30" min="0" max="120" step="5" inputmode="numeric"></label><label class="field">Вход / выход, минут каждый<input id="accessMinutes" type="number" value="3" min="0" max="15" step="0.5" inputmode="decimal"></label><p>Это открытые параметры модели, а не измеренные времена Московского метро. Для следующего этапа нужны реальные времена между станциями и связи пересадок.</p></div>
+      <div id="metroParameters"><label class="field">Модельная скорость поезда, км/ч<input id="metroSpeed" type="number" value="35" min="15" max="70" step="1" inputmode="decimal"></label><label class="field">Остановка поезда, секунд<input id="metroDwell" type="number" value="30" min="0" max="120" step="5" inputmode="numeric"></label><label class="field">Вход / выход, минут каждый<input id="accessMinutes" type="number" value="3" min="0" max="15" step="0.5" inputmode="decimal"></label><label class="field">Пересадка между линиями, минут<input id="transferMinutes" type="number" value="5" min="1" max="15" step="0.5" inputmode="decimal"></label><label class="field">Ожидание каждого поезда, минут<input id="waitMinutes" type="number" value="0" min="0" max="15" step="0.5" inputmode="decimal"></label><p>По умолчанию ожидание не учитывается. Скорость, остановки, вход/выход и пересадки — параметры оценки, а не проверенные времена каждого перегона. Пунктир пересадки показывает связь станций, а не точную схему подземного коридора.</p></div>
       <dl class="metrics"><div><dt>Пакет данных</dt><dd id="packMetric">—</dd></div><div><dt>Адресов в зоне</dt><dd id="addressMetric">—</dd></div><div><dt>Участков графа</dt><dd id="graphMetric">—</dd></div><div><dt>Подготовка графа</dt><dd id="initMetric">—</dd></div><div><dt>Последний расчёт</dt><dd id="routeMetric">—</dd></div><div><dt>Кадр карты</dt><dd id="frameMetric">—</dd></div></dl>
       <p id="dataDescription">Геометрия: OpenStreetMap, выгрузка BBBike от 3 октября 2026. Маршрут — расчётный, не GPS-трек.</p>
       <p>Пунктир у адреса — приблизительный подход от центра объекта к улице. Вход, ограждения и актуальность проходов нужно проверить на месте. Пешеходные ограничения учитываются только там, где они записаны в OSM.</p>
       <button id="exportMetrics" class="secondary" disabled><svg><use href="#i-download"/></svg>Скачать результат теста</button>
     </div></details>
     <details class="card details-card"><summary>Взять адреса из резервной копии<svg><use href="#i-up"/></svg></summary><div class="details-body"><p>Необязательно. Выбранный JSON-файл читается только на телефоне. Рабочая база не открывается и не меняется. Имя клиента, телефон и комментарий не импортируются.</p><label class="file-button">Выбрать JSON<input id="backupFile" type="file" accept=".json,application/json"></label><div id="backupDays" hidden><label class="field">День из файла<select id="backupDate"></select></label><button class="secondary" id="importDay">Добавить адреса этого дня</button></div><p id="importReport" role="status"></p></div></details>
-    <footer class="page-footer">Отдельный эксперимент · версия 2<br>Рабочие маршруты и расходы не изменяются.</footer>
+    <footer class="page-footer">Отдельный эксперимент · версия 3<br>Рабочие маршруты и расходы не изменяются.</footer>
   </main>
   <dialog id="pointDialog"><form method="dialog"><div class="dialog-heading"><h2>Изменить остановку</h2><button class="icon-button" value="cancel" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><label class="field">Подпись<input id="pointLabel" maxlength="200"></label><p>Чтобы заменить адрес, удалите эту точку и выберите другой адрес в поиске. Порядок меняется стрелками у остановки.</p><button id="savePoint" class="primary" value="save">Сохранить</button></form></dialog>
   <script src="./map-view.js"></script>
+  <script src="./address-store.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

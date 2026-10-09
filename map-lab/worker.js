@@ -9,7 +9,8 @@ self.onmessage = function ({ data }) {
       router = new LocalRouter.Router(data.graph);
       self.postMessage({ type: 'ready', milliseconds: performance.now() - started,
         nodes: data.graph.nodes.length, edges: data.graph.edges.length, stations: router.stations.length,
-        graphTypedBytes: router.typedBytes });
+        graphTypedBytes: router.typedBytes,
+        transferLinks: router.stations.reduce((n, s) => n + s.outgoing.filter(e => e.transfer).length, 0) / 2 });
       return;
     }
     if (data.type === 'route') {

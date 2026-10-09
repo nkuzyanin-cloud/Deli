@@ -9,7 +9,7 @@
       this.pointers = new Map(); this.picking = false; this.features = []; this.grid = new Map();
       this.gridSize = 500; this.frameTimes = []; this.indexFeatures();
       this.resizeObserver = new ResizeObserver(() => this.resize()); this.resizeObserver.observe(canvas);
-      this.installGestures(); this.fitZone();
+      this.resize(); this.installGestures(); this.fitZone();
     }
     addFeature(type, value, points) {
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -192,7 +192,8 @@
       this.drawLabels(roads);
       for (const leg of this.legs) for (const part of leg.parts) {
         this.path(part.coords); c.setLineDash([]); c.strokeStyle = '#ffffff'; c.lineWidth = part.mode === 'metro' ? 8 : 7; c.stroke();
-        c.strokeStyle = part.mode === 'metro' ? part.colour : '#1477fa'; c.lineWidth = part.mode === 'metro' ? 5 : 4; c.stroke();
+        c.setLineDash(part.mode === 'transfer' ? [5, 4] : []);
+        c.strokeStyle = part.mode === 'metro' ? part.colour : part.mode === 'transfer' ? '#9c5fc2' : '#1477fa'; c.lineWidth = part.mode === 'metro' ? 5 : 4; c.stroke();
         c.setLineDash([3, 4]); c.strokeStyle = '#537ea8'; c.lineWidth = 2;
         for (const pair of part.connectors || []) { this.path(pair); c.stroke(); }
       }
