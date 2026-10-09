@@ -1,5 +1,5 @@
-const CACHE='courier-pwa-notebook-v29';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
+const CACHE='courier-pwa-notebook-v30';
+const ASSETS=['./','./index.html','./day-map.js','./day-map.css','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 async function removeOldCaches(){
   const keys=await caches.keys();
   await Promise.all(keys.filter(k=>k.startsWith('courier-pwa-')&&k!==CACHE).map(k=>caches.delete(k)));
