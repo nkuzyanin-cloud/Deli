@@ -6,6 +6,7 @@ Geometry crossings do not create graph connections: OSM node identity does.
 """
 import argparse
 import collections
+import gzip
 import hashlib
 import heapq
 import json
@@ -66,6 +67,7 @@ class Extract(osmium.SimpleHandler):
         self.metro_ways = {}
         self.metro_routes = []
         self.stop_areas = []
+        self.stop_groups = []
         self.geom = osmium.geom.GeoJSONFactory()
 
     def add_address(self, tags, lon, lat, source, priority):
@@ -87,7 +89,7 @@ class Extract(osmium.SimpleHandler):
             if tags.get('name') and (tags.get('tourism') in {'museum', 'attraction'} or
                                     tags.get('place') in {'square', 'neighbourhood'}):
                 self.places.append([tags['name'], *xy(lon, lat)])
-        if tags.get('railway') == 'stop' or tags.get('station') == 'subway' or tags.get('subway') == 'yes':
+        if tags.get('railway') in {'stop', 'subway_entrance'} or tags.get('station') == 'subway' or tags.get('subway') == 'yes':
             self.metro_nodes[n.id] = {'p': xy(lon, lat), 'name': tags.get('name', ''),
                                      'inside': inside(lon, lat), 'tags': tags}
         if tags.get('foot') in DENIED or (tags.get('access') in DENIED and tags.get('foot') not in {'yes', 'designated', 'permissive'}):
@@ -133,8 +135,11 @@ class Extract(osmium.SimpleHandler):
                                       'colour': tags.get('colour', '#4582d9'),
                                       'members': [(m.type, m.ref, m.role) for m in r.members]})
         if tags.get('public_transport') == 'stop_area':
-            self.stop_areas.append({'name': tags.get('name', ''),
+            self.stop_areas.append({'osm': r.id, 'name': tags.get('name', ''),
                                     'members': [m.ref for m in r.members if m.type == 'n']})
+        if tags.get('public_transport') == 'stop_area_group':
+            self.stop_groups.append({'osm': r.id, 'name': tags.get('name', ''),
+                                     'members': [m.ref for m in r.members if m.type == 'r']})
 
     def area(self, a):
         tags = dict(a.tags)
@@ -255,16 +260,44 @@ def build(source, out):
                                            'colour': route['colour'], 'osm': ident})
             metro_edges.append({'a': station_ids[(a, route['ref'])], 'b': station_ids[(b, route['ref'])],
                                 'line': route['ref'], 'colour': route['colour'], **shape})
-    pack = {'version': 1, 'title': 'Москва · центр и север', 'origin': ORIGIN,
+    # Transfers require explicit OSM membership, never proximity alone.
+    area_stations = {}
+    for area in handler.stop_areas:
+        members = set(area['members'])
+        indices = [i for i, s in enumerate(metro_stations) if s['osm'] in members]
+        area_stations[area['osm']] = indices
+        entrances = [handler.metro_nodes[n]['p'] for n in members if n in handler.metro_nodes
+                     and handler.metro_nodes[n]['tags'].get('railway') == 'subway_entrance'
+                     and handler.metro_nodes[n]['inside']]
+        for i in indices:
+            metro_stations[i]['entrances'] = entrances
+    transfers, transfer_pairs = [], set()
+    def connect(indices, source):
+        for a in indices:
+            for b in indices:
+                if a >= b or metro_stations[a]['line'] == metro_stations[b]['line']:
+                    continue
+                if (a, b) in transfer_pairs:
+                    continue
+                transfer_pairs.add((a, b))
+                transfers.append({'a': a, 'b': b, 'source': source})
+    for area in handler.stop_areas:
+        connect(area_stations[area['osm']], 'relation/' + str(area['osm']))
+    for group in handler.stop_groups:
+        connect([i for ident in group['members'] for i in area_stations.get(ident, [])],
+                'relation/' + str(group['osm']))
+    pack = {'version': 2, 'title': 'Москва · центр и север', 'origin': ORIGIN,
             'scale': [SCALE_X, SCALE_Y], 'bbox': BBOX,
             'source': {'url': 'https://download.bbbike.org/osm/bbbike/Moscow/Moscow.osm.pbf',
                        'snapshot': '2026-10-03', 'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                        'license': 'ODbL-1.0', 'attribution': '© OpenStreetMap contributors'},
             'nodes': nodes, 'edges': edges, 'streets': streets, 'roads': roads,
             'roadTypes': ROAD_TYPES, 'polygons': handler.polygons, 'addresses': address_rows,
-            'places': handler.places, 'metro': {'stations': metro_stations, 'edges': metro_edges}}
+            'places': handler.places, 'metro': {'stations': metro_stations, 'edges': metro_edges,
+                                             'transfers': transfers}}
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(pack, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    raw = json.dumps(pack, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+    out.write_bytes(gzip.compress(raw, compresslevel=9, mtime=0) if out.suffix == '.gz' else raw)
     print(json.dumps({'bytes': out.stat().st_size, 'nodes': len(nodes), 'edges': len(edges),
                       'addresses': len(address_rows), 'roads': len(roads), 'polygons': len(handler.polygons),
                       'metroStations': len(metro_stations), 'metroEdges': len(metro_edges)}, indent=2), flush=True)
