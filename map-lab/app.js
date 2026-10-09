@@ -1,8 +1,8 @@
 /* Independent test. Never reads/writes courier_routes_v3; no customer data leaves the device. */
 (() => {
   'use strict';
-  const KEY = 'courier_map_lab_v1', CACHE = 'courier-map-lab-v1', $ = id => document.getElementById(id);
-  const state = { stops: [], mode: 'walk' }, stats = { version: 1, startedAt: new Date().toISOString(), frames: [] };
+  const KEY = 'courier_map_lab_v1', CACHE = 'courier-map-lab-v2', DATA = './data/moscow-test.json.gz', $ = id => document.getElementById(id);
+  const state = { stops: [], mode: 'walk' }, stats = { version: 2, startedAt: new Date().toISOString(), frames: [] };
   let pack, map, worker, ready = false, generation = 0, busy = false, timer, importedBackup, editing = -1;
   function normal(s) { return String(s).toLocaleLowerCase('ru').replaceAll('ё', 'е').replace(/(?:^|[\s,])(?:улица|ул\.|переулок|пер\.|проспект|просп\.|дом|д\.)(?=[\s,]|$)/gu, ' ').replace(/корпус|корп\./gu, 'к').replace(/строение|стр\./gu, 'с').replace(/[^\p{L}\p{N}]+/gu, ' ').trim(); }
   const compact = s => normal(s).replaceAll(' ', '');
@@ -126,16 +126,29 @@
         service.addEventListener('statechange', check); check();
       });
       const cache = await caches.open(CACHE);
-      return Boolean(await cache.match(new URL('./data/moscow-test.json', location.href)));
+      return Boolean(await cache.match(new URL(DATA, location.href)));
     } catch (error) { stats.offlineError = error.message; return false; }
   }
   async function init() {
     try {
       const started = performance.now(), offline = await offlineInstall();
       const cache = 'caches' in window ? await caches.open(CACHE) : null;
-      const response = await cache?.match(new URL('./data/moscow-test.json', location.href)) || await fetch('./data/moscow-test.json');
+      const response = await cache?.match(new URL(DATA, location.href)) || await fetch(DATA);
       if (!response.ok) throw new Error('Файл данных не загрузился. Проверьте, что папка data/ загружена вместе с тестом.');
-      const raw = await response.arrayBuffer(); stats.packBytes = raw.byteLength;
+      let raw = await response.arrayBuffer(); stats.packBytes = raw.byteLength;
+      const header = new Uint8Array(raw, 0, Math.min(2, raw.byteLength));
+      if (header[0] === 0x1f && header[1] === 0x8b) {
+        if (typeof DecompressionStream !== 'function') throw new Error('Для этой сборки нужен Safari / iOS 16.4 или новее либо современный Chromium.');
+        $('loadDetail').textContent = 'Распаковываем карту на устройстве…';
+        try {
+          raw = await new Response(new Response(raw).body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+        } catch (_) { throw new Error('Не удалось распаковать файл карты. Повторно загрузите moscow-test.json.gz из нового ZIP.'); }
+        stats.packFormat = 'gzip';
+      } else {
+        // A host with Content-Encoding may already have decompressed the response.
+        stats.packFormat = 'decoded-by-host';
+      }
+      stats.unpackedBytes = raw.byteLength;
       pack = JSON.parse(new TextDecoder().decode(raw)); stats.loadMilliseconds = Math.round(performance.now() - started);
       if (pack.version !== 1 || !Array.isArray(pack.nodes) || !Array.isArray(pack.edges) || !Array.isArray(pack.addresses)) throw new Error('Неподдерживаемый пакет карты.');
       worker = new Worker('./worker.js');

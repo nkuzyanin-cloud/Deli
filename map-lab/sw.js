@@ -1,8 +1,8 @@
 /* Isolated /map-lab/ scope. Never deletes courier-pwa caches or user data. */
 'use strict';
-const CACHE = 'courier-map-lab-v1';
+const CACHE = 'courier-map-lab-v2';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './map-view.js', './router.js', './worker.js',
-  './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './data/moscow-test.json'];
+  './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './data/moscow-test.json.gz'];
 const urls = new Set(ASSETS.map(p => new URL(p, self.registration.scope).href));
 self.addEventListener('install', event => {
   event.waitUntil((async () => {

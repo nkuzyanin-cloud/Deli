@@ -35,7 +35,7 @@
       <div class="segmented" role="group" aria-label="Способ передвижения"><button id="walkMode" aria-pressed="true">Пешком</button><button id="metroMode" aria-pressed="false">Метро · модель</button></div>
       <div class="map-wrap" id="mapWrap">
         <canvas id="mapCanvas" aria-label="Офлайн-карта улиц и зданий. Адреса можно добавить через поиск ниже." tabindex="0"></canvas>
-        <div class="map-loading" id="mapLoading" role="status"><div class="spinner"></div><strong id="loadTitle">Загружаем тестовую карту</strong><span id="loadDetail">Первый запуск: около 27 МБ. Затем можно без интернета.</span></div>
+        <div class="map-loading" id="mapLoading" role="status"><div class="spinner"></div><strong id="loadTitle">Загружаем тестовую карту</strong><span id="loadDetail">Первый запуск: около 9 МБ. Затем можно без интернета.</span></div>
         <div class="map-controls"><button id="zoomIn" aria-label="Приблизить карту">+</button><button id="zoomOut" aria-label="Отдалить карту">−</button></div>
         <div class="placement" id="placement" hidden>Нажмите на карту, чтобы поставить точку</div>
         <div class="map-scale" id="mapScale"></div>
@@ -65,7 +65,7 @@
       <button id="exportMetrics" class="secondary" disabled><svg><use href="#i-download"/></svg>Скачать результат теста</button>
     </div></details>
     <details class="card details-card"><summary>Взять адреса из резервной копии<svg><use href="#i-up"/></svg></summary><div class="details-body"><p>Необязательно. Выбранный JSON-файл читается только на телефоне. Рабочая база не открывается и не меняется. Имя клиента, телефон и комментарий не импортируются.</p><label class="file-button">Выбрать JSON<input id="backupFile" type="file" accept=".json,application/json"></label><div id="backupDays" hidden><label class="field">День из файла<select id="backupDate"></select></label><button class="secondary" id="importDay">Добавить адреса этого дня</button></div><p id="importReport" role="status"></p></div></details>
-    <footer class="page-footer">Отдельный эксперимент · версия 1<br>Рабочие маршруты и расходы не изменяются.</footer>
+    <footer class="page-footer">Отдельный эксперимент · версия 2<br>Рабочие маршруты и расходы не изменяются.</footer>
   </main>
   <dialog id="pointDialog"><form method="dialog"><div class="dialog-heading"><h2>Изменить остановку</h2><button class="icon-button" value="cancel" aria-label="Закрыть"><svg><use href="#i-close"/></svg></button></div><label class="field">Подпись<input id="pointLabel" maxlength="200"></label><p>Чтобы заменить адрес, удалите эту точку и выберите другой адрес в поиске. Порядок меняется стрелками у остановки.</p><button id="savePoint" class="primary" value="save">Сохранить</button></form></dialog>
   <script src="./map-view.js"></script>
