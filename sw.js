@@ -1,4 +1,4 @@
-const CACHE='courier-pwa-notebook-v31';
+const CACHE='courier-pwa-notebook-v32';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 async function removeOldCaches(){
   const keys=await caches.keys();
